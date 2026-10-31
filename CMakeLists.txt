@@ -34,6 +34,14 @@ if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Plugins/Core.SamplePlugin/CMakeLists.
     )
 endif()
 
+# On mobile platforms the engine runs from an APK, so its binary directory
+# (used to discover dynamic plugins) is not a real directory. Link plugins
+# statically in these builds so they are registered from the executable.
+if (MOBILE)
+    set (SAVED_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
+    set (BUILD_SHARED_LIBS OFF)
+endif ()
+
 # Add plugins (optional).
 include_directories (${CMAKE_SOURCE_DIR}/Plugins)
 add_subdirectory (${CMAKE_SOURCE_DIR}/Plugins/Core.SamplePlugin)
@@ -44,6 +52,15 @@ set (APP_PLUGIN_LIST "Plugin.Core.SamplePlugin;${APP_PLUGIN_NAME}")
 
 # Add main application library with all user code.
 add_subdirectory (${CMAKE_SOURCE_DIR}/Source/Application)
+
+if (MOBILE)
+    set (BUILD_SHARED_LIBS ${SAVED_BUILD_SHARED_LIBS})
+
+    # Static plugins must emit RegisterPlugin_* entry points instead of
+    # PluginDynamicLibraryMain, which is selected by this define.
+    target_compile_definitions (Plugin.Core.SamplePlugin PRIVATE URHO3D_STATIC)
+    target_compile_definitions (${APP_PLUGIN_NAME} PRIVATE URHO3D_STATIC)
+endif ()
 
 # Add custom editor linked with user code.
 # With dynamic linking, pre-built editor can be used.

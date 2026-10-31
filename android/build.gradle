@@ -76,6 +76,13 @@ android {
 
         }
     }
+    packaging {
+        // rbfx's SDLActivity enumerates libs from nativeLibraryDir at startup,
+        // so native libraries must be extracted from the APK (extractNativeLibs=true).
+        jniLibs {
+            useLegacyPackaging true
+        }
+    }
     sourceSets.main {
         manifest.srcFile 'AndroidManifest.xml'
         java.srcDirs = ['src', rbfxAndroidJavaDir]

@@ -3,6 +3,10 @@
 
 #include <Player/PlayerApplication.h>
 
+#if MOBILE
+#include <SDL.h>
+#endif
+
 using namespace Urho3D;
 
 class LauncherApplication : public PlayerApplication
@@ -24,6 +28,18 @@ public:
 
         engineParameters_[EP_PLUGINS] = ea::string::joined(LinkedPlugins::GetLinkedPlugins(), ";");
         LinkedPlugins::RegisterStaticPlugins();
+    }
+
+    void Start() override
+    {
+        PlayerApplication::Start();
+
+#if MOBILE
+        // The engine disables SDL's touch->mouse synthesis because it handles
+        // touches natively. The UI of this sample is desktop-oriented (RmlUi
+        // uses the mouse), so re-enable it to make the app usable on phones.
+        SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "1");
+#endif
     }
 };
 

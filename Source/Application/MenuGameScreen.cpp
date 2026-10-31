@@ -114,9 +114,15 @@ MenuGameScreen::MenuGameScreen(Context* context)
 {
     auto* ui = context_->GetSubsystem<RmlUI>();
 
-    // Setup mouse.
+    // Setup mouse. Mobile platforms have no relative pointer, so the cursor
+    // must stay visible and absolute for the menu to be usable with touch.
+#if MOBILE
+    SetMouseMode(MM_ABSOLUTE);
+    SetMouseVisible(true);
+#else
     SetMouseMode(MM_RELATIVE);
     SetMouseVisible(false);
+#endif
 
     auto* cache = GetSubsystem<ResourceCache>();
 
