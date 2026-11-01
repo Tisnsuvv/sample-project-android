@@ -11,7 +11,7 @@ D:\dev\rbfx-android\                 <- the directory you created
     └── android\                     <- the Gradle project we will build
 ```
 
-Every command below is a **Windows 10 Command Prompt (`cmd.exe`)** command. No Bash, no MSYS2, no PowerShell, no `rebuild.sh`.
+Every command below is a **Windows 10 Command Prompt (`cmd.exe`)** command. No Bash, no MSYS2, no PowerShell, without automated build via ex: `rebuild.sh`.
 
 `rebuild.sh` only automates five things. This document does them by hand:
 
