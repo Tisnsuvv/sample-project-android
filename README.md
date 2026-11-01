@@ -1,5 +1,6 @@
 # Building `sample-project-android` into an APK on Windows 10 
 
+This is vibe-coded guide!
 This guide assumes you already have this layout and nothing else:
 
 ```
