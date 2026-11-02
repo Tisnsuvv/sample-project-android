@@ -65,7 +65,7 @@ if not exist "D:\dev\rbfx-android\sample-project-android\Project\Data" echo NOT 
 ## Step 2 — Install the external toolchains
 
 The APK needs: **JDK 17**, **Android SDK (platform 35 + build-tools 35)**, **Android NDK**,
-**CMake ≥ 3.25**, plus **Gradle 8.14.3** (because the repo does not ship a wrapper — see Step 5).
+and **CMake ≥ 3.25**. The project's Gradle wrapper pins **Gradle 8.14.3** and downloads it automatically.
 
 JDK 17 (skip if `java -version` already reports 17):
 
@@ -87,7 +87,8 @@ set "SDKM=%LOCALAPPDATA%\Android\Sdk\cmdline-tools\latest\bin\sdkmanager.bat"
 but then adjust `ANDROID_NDK_HOME` in Step 3). `cmake;3.31.6` satisfies the `3.25.0+` requirement
 declared in `android\build.gradle`; a system CMake ≥ 3.25 on `PATH` also works.
 
-Gradle 8.14.3 (the version pinned by the project's wrapper properties):
+Gradle 8.14.3 (optional — `android\gradlew.bat` downloads the version pinned in
+`gradle\wrapper\gradle-wrapper.properties`):
 
 ```bat
 curl -L -o "%TEMP%\gradle-8.14.3-bin.zip" https://services.gradle.org/distributions/gradle-8.14.3-bin.zip
@@ -241,29 +242,28 @@ Data=Data
 
 ---
 
-## Step 5 — Create the Gradle wrapper (one time)
+## Step 5 — Check the Gradle wrapper
 
-`sample-project`'s `.gitignore` contains the line `gradle*`, so a fresh clone has **no**
-`gradlew`, no `gradlew.bat`, and no `gradle\wrapper\gradle-wrapper.jar`. Create them with the
-Gradle 8.14.3 you installed in Step 2:
+The wrapper is committed in `android\` (`gradlew`, `gradlew.bat`, and
+`gradle\wrapper\gradle-wrapper.jar`/`gradle-wrapper.properties`), pinned to Gradle 8.14.3, so a
+fresh clone is ready to build and needs no extra Gradle install:
 
 ```bat
 cd /d "%PROJECT%\android"
-gradle.bat wrapper --gradle-version 8.14.3
+dir /b gradlew.bat gradle\wrapper
 ```
 
-Result:
+If the files are missing, regenerate them with the standalone Gradle 8.14.3 from Step 2:
 
 ```bat
-dir /b gradlew.bat gradle\wrapper
+gradle.bat wrapper --gradle-version 8.14.3
 ```
 
 The `wrapper` task configures `build.gradle` (so `ANDROID_HOME`, `Urho3D_DIR`, and
 `ci_arch` must already be set) and downloads AGP 8.13.0 from `google()`/`mavenCentral()`.
 
-*Skip this step entirely* if you prefer to keep using the standalone binary — just replace
-`gradlew.bat` with `gradle.bat` in Step 6. The wrapper is only a convenience; it pins
-8.14.3, which is the version AGP 8.13.0 expects.
+*You can skip the wrapper entirely* if you prefer the standalone binary — just replace
+`gradlew.bat` with `gradle.bat` in Step 6. It pins the same 8.14.3 that AGP 8.13.0 expects.
 
 ---
 
@@ -358,7 +358,7 @@ Delete `%USERPROFILE%\.gradle\caches` only as a last resort — it re-downloads 
 
 | Symptom | Cause / fix |
 | --- | --- |
-| `'gradlew.bat' is not recognized` | The wrapper is git-ignored. Run Step 5. |
+| `'gradlew.bat' is not recognized` | You are not in `android\`, or the wrapper files are missing. Run Step 5. |
 | `SDK location not found` | `ANDROID_HOME` not set in *this* window (or set with `setx` in a window opened before it). Re-run Step 3, or create `android\local.properties` with `sdk.dir=D\:\\Users\\you\\AppData\\Local\\Android\\Sdk`. |
 | `Could not find a package configuration file provided by "Urho3D"` | `Urho3D_DIR` / `CMAKE_PREFIX_PATH` wrong. Must be `...\rbfx\CMake\Urho3D\share\Urho3D` (the folder containing `Urho3DConfig.cmake`), with forward slashes. |
 | `package org.libsdl.app does not exist` / `SDLActivity` unresolved | `RBFX_ANDROID_JAVA_DIR` unset. See 3.1. Alternative: `mklink /J "%PROJECT%\rbfx" "%ENGINE%"` so the `../rbfx` default resolves. |

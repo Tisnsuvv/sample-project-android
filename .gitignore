@@ -6,11 +6,12 @@ build/
 cmake-build/
 .vscode/
 
-# Android output directories
-gradle*
-.gradle
-.idea
-android/.cxx
+# Android build output and IDE state
+android/.gradle/
+android/.idea/
+android/.cxx/
+android/local.properties
+android/**/build/
 
 # Ignore log files
 Urho3D.log
